@@ -8,6 +8,7 @@ const uiUpdater = require('./ui-updater');
 const twilio = require('./twilio');
 const nlu = require('./nlu');
 const nluConfig = require('./config/nlu');
+const log = require('loglevel');
 
 
 /**
@@ -92,11 +93,15 @@ function createTwimlBin(req, res) {
     //
     // cf. https://www.twilio.com/docs/voice/twiml/gather#action
     const receiverPhoneNumber = req.query.Digits;
+    log.debug("Atleast I got the answer")
+    console.log(receiverPhoneNumber)
+    log.debug(receiverPhoneNumber)
 
     if (!receiverPhoneNumber) {
         return res.status(400).json({ error: 'Missing required query parameter "Digits"' });
     }
     const twimlbin = twilio.generateTwimlBin(receiverPhoneNumber);
+    log.debug(twimlbin)
     res.set('Content-Type', 'text/xml');
     res.send(twimlbin);
 }

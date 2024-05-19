@@ -17,7 +17,7 @@ let HOSTNAME;
  */
 function init() {
     // log current config to help with debugging
-    HOSTNAME = config.getHostname();
+    HOSTNAME = "13c7-27-7-208-3.ngrok-free.app";
     log.debug('Twilio setup:', { HOSTNAME });
 }
 
@@ -42,7 +42,7 @@ function generateTwimlBin(receiverPhoneNumber) {
     <Stream url="wss://${HOSTNAME}/ws/receiver" track="outbound_track"/>
   </Start>
   <Dial>
-    +${receiverPhoneNumber}
+    +91${receiverPhoneNumber}
   </Dial>
   <Pause length="40"/>
 </Response>`;

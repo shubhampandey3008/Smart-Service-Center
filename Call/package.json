@@ -18,7 +18,7 @@
     "node": "16.x"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "lint": "eslint app.js lib/*.js",
     "unittest": "mocha lib/*.spec.js",
     "test": "npm run lint && npm audit && npm run unittest",
@@ -36,6 +36,7 @@
     "chai": "^4.3.6",
     "eslint": "^8.18.0",
     "mocha": "^10.0.0",
+    "nodemon": "^3.1.0",
     "nyc": "^15.1.0",
     "sinon": "^14.0.0",
     "supertest": "^6.2.3",

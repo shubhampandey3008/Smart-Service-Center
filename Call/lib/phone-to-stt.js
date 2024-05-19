@@ -79,18 +79,42 @@ function createSpeechToTextClient() {
  * @param {Express.Request} req - expressjs request reference for the incoming
  *                                  connection
  */
-function handleIncomingWSConnection(ws, req) {
-    log.debug('received new ws connection from twilio', req.originalUrl);
-    const who = req.originalUrl.includes('caller') ? 'caller' : 'receiver';
+function handleIncomingWSConnection(wss, req) {
+
+    wss.on('connection', async (ws) => {
+        console.log('Twilio media stream WebSocket connected')
+        ws.on('message', async (message) => {
+          const msg = JSON.parse(message);
+          switch (msg.event) {
+            case 'connected':
+              console.info('Twilio media stream connected');
+              break;
+            case 'start':
+              console.info('Twilio media stream started');
+              break;
+            case 'media':
+              console.log(msg);
+              break;
+            case 'stop':
+              console.info('Twilio media stream stopped');
+              break;
+          }
+        });
+        ws.on('close', async () => {
+          console.log('Twilio media stream WebSocket disconnected');
+        })
+    // log.debug('received new ws connection from twilio', req.originalUrl);
+    // const who = req.originalUrl.includes('caller') ? 'caller' : 'receiver';
+    // log.debug(who)
 
     // inbound track always connects first, because they are the
     //  one who initiates the phone call
-    if (who === 'caller') {
-        newCall();
-    }
+    // if (who === 'caller') {
+    //     newCall();
+    // }
 
     // Wrap the websocket in a Node stream
-    const mediaStreamClient = nodeWs.createWebSocketStream(ws, { encoding : 'utf-8' });
+    // const mediaStreamClient = nodeWs.createWebSocketStream(ws, { encoding : 'utf-8' });
 
     // expected websocket data from Twilio is a string containing JSON data like this:
     //  {
@@ -103,21 +127,27 @@ function handleIncomingWSConnection(ws, req) {
     //  }
     //
     //   cf. https://www.twilio.com/docs/voice/twiml/stream#message-media
-    const mediaDecoderStreamClient = new Transform({
-        transform: (chunk, encoding, callback) => {
-            const msg = JSON.parse(chunk.toString('utf8'));
-
+    // const mediaDecoderStreamClient = new Transform({
+    //     transform: (chunk, encoding, callback) => {
+    //         const msg = JSON.parse(chunk.toString('utf8'));
+    //         log.debug(`The URL is ${req.originalUrl}`)
             // skip any events that aren't media as we don't
             //  want to pass them to the speech-to-text service
             // calling callback() with no payload means we send
             //  nothing down the pipe
-            if (msg.event !== 'media') return callback();
+            // if (msg.event !== 'media')
+            //     {
+            //         console.log("Lgg gyi")
+            //         return callback(); 
+            //     } 
+                
 
             // if we're here, we want to send the audio data to STT
-            const audio = Buffer.from(msg.media.payload, 'base64');
-            console.log("Getting the call")
-            return callback(null, audio);
-        }
+            // const audio = Buffer.from(msg.media.payload, 'base64');
+            // console.log("Getting the call")
+            // console.log(audio)
+            // return callback(null, audio);
+        // }
     });
 
 
